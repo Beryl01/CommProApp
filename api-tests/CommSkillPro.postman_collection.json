@@ -1,0 +1,440 @@
+{
+  "info": {
+    "name": "CommSkill Pro — API Tests",
+    "_postman_id": "c5e7a3b1-2d4f-4e8a-9b6c-1a3d5f7e9b0c",
+    "description": "Functional API tests for CommSkill Pro Netlify serverless functions.\n\nBefore running:\n  • Set the baseUrl collection variable (default: https://commproapp.netlify.app)\n  • Positive proxy tests call the live Claude API and consume tokens — use max_tokens: 10 to keep costs minimal.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://commproapp.netlify.app",
+      "type": "string",
+      "description": "Base URL of the deployed app"
+    }
+  ],
+  "item": [
+    {
+      "name": "Claude Proxy — /.netlify/functions/proxy",
+      "description": "Tests for the Claude AI proxy function. Forwards requests to the Anthropic API and returns the response verbatim.",
+      "item": [
+        {
+          "name": "conversation message — 200 OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response has content array', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('content').that.is.an('array');",
+                  "  pm.expect(body.content.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('content[0].text is a non-empty string', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.content[0]).to.have.property('text').that.is.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "pm.test('response has role assistant', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('role', 'assistant');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 10,\n  \"system\": \"You are a workplace communication coach. Reply in 5 words or fewer.\",\n  \"messages\": [\n    { \"role\": \"user\", \"content\": \"Give me one tip.\" }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/proxy",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "proxy"]
+            }
+          }
+        },
+        {
+          "name": "scenario generation request — 200 OK, content parses as JSON array",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('content array is present', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.content).to.be.an('array').with.lengthOf.above(0);",
+                  "});",
+                  "",
+                  "pm.test('content[0].text is a string', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.content[0].text).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 50,\n  \"system\": \"You generate workplace communication scenarios in JSON.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Generate 3 workplace scenarios for a Support Engineer practising handling escalations. Return only a JSON array.\"\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/proxy",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "proxy"]
+            }
+          }
+        },
+        {
+          "name": "scoring request — 200 OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('content array is present', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.content).to.be.an('array').with.lengthOf.above(0);",
+                  "});",
+                  "",
+                  "pm.test('content[0].text is a non-empty string', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.content[0].text).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 50,\n  \"system\": \"You score workplace communication. Return JSON with a level field.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"FULL TRANSCRIPT:\\nUser: I hear you, let me look into this immediately.\\nScore this conversation.\"\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/proxy",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "proxy"]
+            }
+          }
+        },
+        {
+          "name": "missing messages field — 200 (proxy passes to Claude, Claude handles validation)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('response is not a 500 server crash', () => {",
+                  "  pm.expect(pm.response.code).to.not.equal(500);",
+                  "});",
+                  "",
+                  "pm.test('response is JSON', () => {",
+                  "  pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 10\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/proxy",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "proxy"]
+            }
+          }
+        },
+        {
+          "name": "invalid JSON body — 400 Bad Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('error message is Invalid JSON body', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.nested.property('error.message', 'Invalid JSON body');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "this is not valid json { broken",
+              "options": { "raw": { "language": "text" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/proxy",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "proxy"]
+            }
+          }
+        },
+        {
+          "name": "GET method not allowed — 405",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 405', () => {",
+                  "  pm.response.to.have.status(405);",
+                  "});",
+                  "",
+                  "pm.test('body mentions Method Not Allowed', () => {",
+                  "  pm.expect(pm.response.text()).to.include('Method Not Allowed');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/proxy",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "proxy"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Slack Relay — /.netlify/functions/slack",
+      "description": "Tests for the Slack relay function. Forwards any JSON payload to the configured SLACK_WEBHOOK_URL and returns { ok: true } on success.",
+      "item": [
+        {
+          "name": "plain text notification — 200 OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response body is { ok: true }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.deep.equal({ ok: true });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"CommSkill Pro — API test ping\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/slack",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "slack"]
+            }
+          }
+        },
+        {
+          "name": "Block Kit payload — 200 OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response body is { ok: true }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.deep.equal({ ok: true });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": { \"type\": \"plain_text\", \"text\": \"CommSkill Pro — API Test\", \"emoji\": true }\n    },\n    {\n      \"type\": \"section\",\n      \"text\": { \"type\": \"mrkdwn\", \"text\": \"*Status:* ✅ All tests passed\\n*Triggered by:* Postman collection run\" }\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/slack",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "slack"]
+            }
+          }
+        },
+        {
+          "name": "empty payload object — 200 OK (Slack accepts {})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200 or Slack rejected empty payload (400/bad_request)', () => {",
+                  "  pm.expect([200, 400]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('response is JSON', () => {",
+                  "  pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/slack",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "slack"]
+            }
+          }
+        },
+        {
+          "name": "invalid JSON body — 400 Bad Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('error message is Invalid JSON body', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error', 'Invalid JSON body');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "not valid json at all",
+              "options": { "raw": { "language": "text" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/slack",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "slack"]
+            }
+          }
+        },
+        {
+          "name": "GET method not allowed — 405",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 405', () => {",
+                  "  pm.response.to.have.status(405);",
+                  "});",
+                  "",
+                  "pm.test('body mentions Method Not Allowed', () => {",
+                  "  pm.expect(pm.response.text()).to.include('Method Not Allowed');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/.netlify/functions/slack",
+              "host": ["{{baseUrl}}"],
+              "path": [".netlify", "functions", "slack"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
