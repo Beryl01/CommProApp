@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
   completeOnboarding, waitForScenarios, scoreAllScenarios, startConversation, scoreScenario,
-  UI_TIMEOUT, SCENARIO_LOAD_TIMEOUT, SCORE_PANEL_TIMEOUT,
+  UI_TIMEOUT, SCORE_PANEL_TIMEOUT,
 } from './helpers';
 
 // ---------------------------------------------------------------------------

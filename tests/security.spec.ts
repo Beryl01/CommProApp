@@ -7,11 +7,11 @@ import { MOCK_SCENARIOS, mockProxy, completeOnboarding, waitForScenarios, startC
 
 test.describe('Onboarding form sanitisation', () => {
   test('angle brackets in the role field are stripped before use', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('<b>Senior</b> Engineer');
     await page.getByPlaceholder(/active listening/).fill('active listening');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
 
@@ -21,11 +21,11 @@ test.describe('Onboarding form sanitisation', () => {
   });
 
   test('a script tag in the role field does not execute', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('<script>window.__roleXSS = 1</script>Engineer');
     await page.getByPlaceholder(/active listening/).fill('handling escalations');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
 
@@ -34,11 +34,11 @@ test.describe('Onboarding form sanitisation', () => {
   });
 
   test('role text longer than 100 characters is truncated in the badge', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('A'.repeat(150));
     await page.getByPlaceholder(/active listening/).fill('active listening');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#hb-role')).toBeVisible({ timeout: UI_TIMEOUT });
     const badgeText = await page.locator('#hb-role').textContent() ?? '';
@@ -58,7 +58,7 @@ test.describe('HTML escaping in scenario cards', () => {
       MOCK_SCENARIOS[2],
     ];
 
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -69,7 +69,7 @@ test.describe('HTML escaping in scenario cards', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Engineer');
     await page.getByPlaceholder(/active listening/).fill('active listening');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('.sc')).toHaveCount(3, { timeout: SCENARIO_LOAD_TIMEOUT });
 
@@ -84,7 +84,7 @@ test.describe('HTML escaping in scenario cards', () => {
       MOCK_SCENARIOS[2],
     ];
 
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -95,7 +95,7 @@ test.describe('HTML escaping in scenario cards', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Engineer');
     await page.getByPlaceholder(/active listening/).fill('active listening');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('.sc')).toHaveCount(3, { timeout: SCENARIO_LOAD_TIMEOUT });
 
@@ -109,7 +109,7 @@ test.describe('HTML escaping in scenario cards', () => {
       MOCK_SCENARIOS[2],
     ];
 
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -120,7 +120,7 @@ test.describe('HTML escaping in scenario cards', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Engineer');
     await page.getByPlaceholder(/active listening/).fill('active listening');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('.sc')).toHaveCount(3, { timeout: SCENARIO_LOAD_TIMEOUT });
 

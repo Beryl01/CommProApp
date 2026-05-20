@@ -11,7 +11,11 @@ import {
 // ---------------------------------------------------------------------------
 
 async function serverError(route: Route): Promise<void> {
-  await route.fulfill({ status: 500, body: 'Internal Server Error' });
+  await route.fulfill({
+    status: 500,
+    contentType: 'application/json',
+    body: JSON.stringify({ error: { message: 'Internal Server Error' } }),
+  });
 }
 
 async function successfulGeneration(route: Route): Promise<void> {
@@ -51,7 +55,7 @@ function callType(body: { messages?: Array<{ role: string; content: string }> })
 
 test.describe('Scenario generation failure', () => {
   test('shows an error state in the content area when generation fails', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       const body = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
       callType(body) === 'generation' ? await serverError(route) : await successfulReply(route);
     });
@@ -59,10 +63,10 @@ test.describe('Scenario generation failure', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Project Manager');
     await page.getByPlaceholder(/active listening/).fill('running difficult meetings');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
-    await expect(page.locator('#content')).toContainText(/could not load|reload/i, { timeout: SCENARIO_LOAD_TIMEOUT });
+    await expect(page.locator('#content')).toContainText(/could not load|reload/i, { timeout: 30_000 });
   });
 });
 
@@ -72,7 +76,7 @@ test.describe('Scenario generation failure', () => {
 
 test.describe('Conversation opening failure', () => {
   test('shows a connection error in the chat when the AI fails on the opening message', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       const body = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
       callType(body) === 'generation' ? await successfulGeneration(route) : await serverError(route);
     });
@@ -80,7 +84,7 @@ test.describe('Conversation opening failure', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Support Engineer');
     await page.getByPlaceholder(/active listening/).fill('handling escalations');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await expect(page.locator('.sc')).toHaveCount(3, { timeout: SCENARIO_LOAD_TIMEOUT });
@@ -97,7 +101,7 @@ test.describe('Conversation opening failure', () => {
 test.describe('Conversation reply failure', () => {
   test('shows an error in the chat when the AI fails to reply during a turn', async ({ page }) => {
     // Single-message calls = opening message (allow). Multiple = conversation turn (fail).
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       const body         = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
       const messageCount = body?.messages?.length ?? 0;
       if      (callType(body) === 'generation') { await successfulGeneration(route); }
@@ -108,7 +112,7 @@ test.describe('Conversation reply failure', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Support Engineer');
     await page.getByPlaceholder(/active listening/).fill('handling escalations');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await expect(page.locator('.sc')).toHaveCount(3, { timeout: SCENARIO_LOAD_TIMEOUT });
@@ -120,7 +124,7 @@ test.describe('Conversation reply failure', () => {
   });
 
   test('the Send button is re-enabled after a failed turn so the user can retry', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       const body         = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
       const messageCount = body?.messages?.length ?? 0;
       if      (callType(body) === 'generation') { await successfulGeneration(route); }
@@ -131,7 +135,7 @@ test.describe('Conversation reply failure', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Support Engineer');
     await page.getByPlaceholder(/active listening/).fill('handling escalations');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await expect(page.locator('.sc')).toHaveCount(3, { timeout: SCENARIO_LOAD_TIMEOUT });
@@ -150,39 +154,44 @@ test.describe('Conversation reply failure', () => {
 
 test.describe('Scoring failure', () => {
   test('shows an error inside the score panel when scoring fails', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', async (route) => {
-      const body = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
-      if      (callType(body) === 'scoring')    { await serverError(route); }
-      else if (callType(body) === 'generation') { await successfulGeneration(route); }
-      else                                       { await successfulReply(route); }
-    });
-
     await completeOnboarding(page, { channel: 'slack' });
     await waitForScenarios(page);
     await startConversation(page, 0);
-    await page.locator('#end-0').click();
-    await expect(page.locator('#score-0')).toContainText(/failed|error/i, { timeout: SCORE_PANEL_TIMEOUT });
-  });
 
-  test('a second End & Score click is ignored while scoring is already running', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    // Override scoring to fail — registered after mockProxy so it runs first (LIFO).
+    // Non-scoring calls fall through to mockProxy via fallback.
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       const body = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
       if (callType(body) === 'scoring') {
-        await new Promise((resolve) => setTimeout(resolve, 2_000));
-        await successfulScore(route);
-      } else if (callType(body) === 'generation') {
-        await successfulGeneration(route);
+        await serverError(route);
       } else {
-        await successfulReply(route);
+        await route.fallback();
       }
     });
 
+    await page.locator('#end-0').click();
+    await expect(page.locator('#score-0')).toContainText(/failed|error/i, { timeout: UI_TIMEOUT });
+  });
+
+  test('a second End & Score click is ignored while scoring is already running', async ({ page }) => {
     await completeOnboarding(page, { channel: 'slack' });
     await waitForScenarios(page);
     await startConversation(page, 0);
 
+    // Override scoring to be slow — registered after mockProxy so it runs first (LIFO).
+    await page.route('**/.netlify/functions/proxy', async (route) => {
+      const body = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
+      if (callType(body) === 'scoring') {
+        await new Promise<void>((resolve) => setTimeout(resolve, 2_000));
+        await successfulScore(route);
+      } else {
+        await route.fallback();
+      }
+    });
+
     await page.locator('#end-0').click();
-    await page.locator('#end-0').click();
+    // Attempt a second click immediately — if the button is disabled while scoring is running, this times out quickly.
+    await page.locator('#end-0').click({ timeout: 500 }).catch(() => { /* button was guarded, second click ignored */ });
     await expect(page.locator('#score-0 .sp')).toHaveCount(1, { timeout: SCORE_PANEL_TIMEOUT });
   });
 });

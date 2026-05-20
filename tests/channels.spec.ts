@@ -15,12 +15,12 @@ test.describe('Channel sidebar', () => {
   });
 
   test('when two channels are selected both appear in the sidebar', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('HR Specialist');
     await page.getByPlaceholder(/active listening/).fill('giving difficult feedback');
-    await page.locator('[data-mode="slack"]').click();
-    await page.locator('[data-mode="call"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="call"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
 
@@ -36,12 +36,12 @@ test.describe('Channel sidebar', () => {
   });
 
   test('non-active channels do not have the active class', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Account Manager');
     await page.getByPlaceholder(/active listening/).fill('managing client expectations');
-    await page.locator('[data-mode="slack"]').click();
-    await page.locator('[data-mode="email"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="email"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await waitForScenarios(page);
@@ -57,12 +57,12 @@ test.describe('Channel sidebar', () => {
 
 test.describe('Switching channels', () => {
   test('clicking a different channel in the sidebar loads that channel\'s scenarios', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Account Manager');
     await page.getByPlaceholder(/active listening/).fill('managing client expectations');
-    await page.locator('[data-mode="slack"]').click();
-    await page.locator('[data-mode="email"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="email"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await waitForScenarios(page);
@@ -72,12 +72,12 @@ test.describe('Switching channels', () => {
   });
 
   test('the switched-to channel becomes active in the sidebar', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Account Manager');
     await page.getByPlaceholder(/active listening/).fill('managing client expectations');
-    await page.locator('[data-mode="slack"]').click();
-    await page.locator('[data-mode="email"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="email"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await waitForScenarios(page);
@@ -101,12 +101,12 @@ test.describe('Topbar channel display', () => {
   });
 
   test('the topbar shows the total number of selected channels in brackets', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockProxy);
+    await page.route('**/.netlify/functions/proxy', mockProxy);
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('HR Specialist');
     await page.getByPlaceholder(/active listening/).fill('giving difficult feedback');
-    await page.locator('[data-mode="slack"]').click();
-    await page.locator('[data-mode="call"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="call"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await expect(page.locator('#hb-mode')).toContainText('(2)', { timeout: UI_TIMEOUT });

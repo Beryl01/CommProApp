@@ -41,10 +41,10 @@ test.describe('Onboarding', () => {
   });
 
   test('truncates a role longer than 100 characters in the badge', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockClaudeAPI);
+    await page.route('**/.netlify/functions/proxy', mockClaudeAPI);
     await page.getByPlaceholder(/IT Support Specialist/).fill('A'.repeat(150));
     await page.getByPlaceholder(/active listening/).fill('active listening');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#hb-role')).toBeVisible({ timeout: UI_TIMEOUT });
     const badgeText = await page.locator('#hb-role').textContent() ?? '';
@@ -52,30 +52,30 @@ test.describe('Onboarding', () => {
   });
 
   test('transitions to the main app after valid onboarding', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockClaudeAPI);
+    await page.route('**/.netlify/functions/proxy', mockClaudeAPI);
     await page.getByPlaceholder(/IT Support Specialist/).fill('Software Engineer');
     await page.getByPlaceholder(/active listening/).fill('I want to practise staying calm when escalations come in');
-    await page.locator('[data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     await expect(page.locator('#ob')).not.toBeVisible();
   });
 
   test('shows the role in the topbar badge after onboarding', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockClaudeAPI);
+    await page.route('**/.netlify/functions/proxy', mockClaudeAPI);
     await page.getByPlaceholder(/IT Support Specialist/).fill('Product Manager');
     await page.getByPlaceholder(/active listening/).fill('handling difficult conversations');
-    await page.locator('[data-mode="email"]').click();
+    await page.locator('#ob [data-mode="email"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#hb-role')).toContainText('Product Manager', { timeout: UI_TIMEOUT });
   });
 
   test('sidebar shows only the channels selected during onboarding', async ({ page }) => {
-    await page.route('/.netlify/functions/proxy', mockClaudeAPI);
+    await page.route('**/.netlify/functions/proxy', mockClaudeAPI);
     await page.getByPlaceholder(/IT Support Specialist/).fill('HR Specialist');
     await page.getByPlaceholder(/active listening/).fill('giving difficult feedback');
-    await page.locator('[data-mode="slack"]').click();
-    await page.locator('[data-mode="call"]').click();
+    await page.locator('#ob [data-mode="slack"]').click();
+    await page.locator('#ob [data-mode="call"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     const modeNav = page.locator('#mode-nav');

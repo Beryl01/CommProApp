@@ -25,14 +25,20 @@ export function renderList(): void {
 
   if (scenarios.length === 0) {
     area.innerHTML = `<div class="welcome"><div class="welcome-icon">⚙️</div><div class="welcome-title">Loading ${activeMode} scenarios…</div><div class="welcome-desc">Generating scenarios for <strong>${esc(state.role)}</strong></div></div>`;
-    void genScenarios(activeMode).then(() => {
-      if (state.mode !== activeMode) return;   // user switched channels — do not overwrite the new channel's view
-      if (state.generatedScenarios[key]?.length) {
-        renderList();
-      } else {
-        requireEl('content').innerHTML = `<div class="welcome"><div class="welcome-icon">⚠️</div><div class="welcome-title">Could not load ${activeMode} scenarios</div><div class="welcome-desc"><button onclick="location.reload()" class="reload-btn">Reload page</button></div></div>`;
-      }
-    });
+    const showError = () => {
+      if (state.mode !== activeMode) return;
+      requireEl('content').innerHTML = `<div class="welcome"><div class="welcome-icon">⚠️</div><div class="welcome-title">Could not load ${activeMode} scenarios</div><div class="welcome-desc"><button onclick="location.reload()" class="reload-btn">Reload page</button></div></div>`;
+    };
+    void genScenarios(activeMode)
+      .then(() => {
+        if (state.mode !== activeMode) return;
+        if (state.generatedScenarios[key]?.length) {
+          renderList();
+        } else {
+          showError();
+        }
+      })
+      .catch(showError);
     return;
   }
 

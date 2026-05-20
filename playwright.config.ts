@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env['CI'],
   retries:     process.env['CI'] ? 2 : 1,
   workers:     1,                  // one test at a time — avoids API rate limits
-  reporter:    [['html', { open: 'never' }], ['list'], ['./reporters/slack.js']],
+  reporter:    [['html', { open: 'never' }], ['list'], ['./reporters/slack.cjs']],
   timeout:     600_000,            // 10 minutes per test
   expect: {
     timeout:   60_000,             // 1 minute default for assertions

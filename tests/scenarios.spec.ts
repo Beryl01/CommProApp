@@ -95,7 +95,7 @@ test.describe('Scoring', () => {
 test.describe('API integration', () => {
   test('the proxy is called when scenarios are generated', async ({ page }) => {
     let proxyCalled = false;
-    await page.route('/.netlify/functions/proxy', async (route) => {
+    await page.route('**/.netlify/functions/proxy', async (route) => {
       proxyCalled = true;
       await route.fulfill({
         status: 200,
@@ -106,7 +106,7 @@ test.describe('API integration', () => {
     await page.goto('/');
     await page.getByPlaceholder(/IT Support Specialist/).fill('Engineer');
     await page.getByPlaceholder(/active listening/).fill('active listening');
-    await page.locator('[data-mode="email"]').click();
+    await page.locator('#ob [data-mode="email"]').click();
     await page.getByRole('button', { name: 'Start Training →' }).click();
     await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
     expect(proxyCalled).toBe(true);

@@ -136,11 +136,11 @@ export interface OnboardingOptions {
 // Registers mockProxy for all API calls.
 export async function completeOnboarding(page: Page, options: OnboardingOptions): Promise<void> {
   const { channel, role = 'Support Engineer', goal = 'handling escalations with empathy' } = options;
-  await page.route('/.netlify/functions/proxy', mockProxy);
+  await page.route('**/.netlify/functions/proxy', mockProxy);
   await page.goto('/');
   await page.getByPlaceholder(/IT Support Specialist/).fill(role);
   await page.getByPlaceholder(/active listening/).fill(goal);
-  await page.locator(`[data-mode="${channel}"]`).click();
+  await page.locator(`#ob [data-mode="${channel}"]`).click();
   await page.getByRole('button', { name: 'Start Training →' }).click();
   await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
 }
