@@ -4,8 +4,25 @@
 
 'use strict';
 
+const fs    = require('fs');
+const path  = require('path');
 const https = require('https');
 const { URL } = require('url');
+
+// Load .env from project root if Playwright hasn't already done so.
+(function loadEnv() {
+  const envFile = path.join(__dirname, '..', '.env');
+  if (!fs.existsSync(envFile)) return;
+  for (const line of fs.readFileSync(envFile, 'utf8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const val = trimmed.slice(eq + 1).trim();
+    if (key && !process.env[key]) process.env[key] = val;
+  }
+})();
 
 class SlackReporter {
   constructor() {
