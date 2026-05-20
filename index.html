@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CommSkill Pro · Tana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ONBOARDING SCREEN
+═══════════════════════════════════════════════════════════════════ -->
+<div id="ob">
+  <div class="ob-wrap">
+
+    <div class="ob-head">
+      <div class="ob-logo">
+        <svg width="42" height="28" viewBox="0 0 42 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="14" cy="14" r="14" fill="#F5C518" opacity="0.9"/>
+          <circle cx="28" cy="14" r="14" fill="#1AB9C4"/>
+        </svg>
+      </div>
+      <div class="ob-brand-name">tana</div>
+      <h1 class="ob-title">CommSkill Pro</h1>
+      <p class="ob-sub">
+        Practice conversations. Get feedback after every scenario.
+        Build and practice your communication skills.
+      </p>
+    </div>
+
+    <div class="ob-steps">
+
+      <div class="ob-step">
+        <div class="sn">01</div>
+        <div class="sl">What's your role?</div>
+        <p class="sh">Your job title helps to tailor scenarios to your actual work context.</p>
+        <input
+          class="ob-inp"
+          id="ob-role"
+          type="text"
+          placeholder="e.g. IT Support Specialist, Account Manager, HR Business Partner…"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="ob-step">
+        <div class="sn">02</div>
+        <div class="sl">What do you want to practise?</div>
+        <p class="sh">Be specific — the more detail you give, the sharper the scenarios.</p>
+        <textarea
+          class="ob-ta"
+          id="ob-learnt"
+          placeholder="e.g. I want to practise active listening and staying calm under pressure…"
+        ></textarea>
+      </div>
+
+      <div class="ob-step">
+        <div class="sn">03</div>
+        <div class="sl">Choose your channels</div>
+        <p class="sh">Select one or more. Each channel gets 3 tailored scenarios.</p>
+        <div class="mc-grid">
+
+          <div class="mc slack" data-mode="slack" title="Slack — instant messaging">
+            <div class="mc-ck">✓</div>
+            <div class="mc-icon">🟣</div>
+            <div class="mc-lbl">Slack</div>
+            <div class="mc-desc">Instant messaging</div>
+          </div>
+
+          <div class="mc email" data-mode="email" title="Email — formal threads">
+            <div class="mc-ck">✓</div>
+            <div class="mc-icon">📧</div>
+            <div class="mc-lbl">Email</div>
+            <div class="mc-desc">Formal threads</div>
+          </div>
+
+          <div class="mc call" data-mode="call" title="Call — voice conversation">
+            <div class="mc-ck">✓</div>
+            <div class="mc-icon">📞</div>
+            <div class="mc-lbl">Live Call</div>
+            <div class="mc-desc">Voice conversation</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <button class="ob-btn" id="ob-start">Start Training →</button>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <nav class="topbar">
+    <div class="tb-mark" aria-hidden="true">
+      <svg width="22" height="15" viewBox="0 0 42 28" fill="none">
+        <circle cx="14" cy="14" r="14" fill="#F5C518" opacity="0.9"/>
+        <circle cx="28" cy="14" r="14" fill="#1AB9C4"/>
+      </svg>
+    </div>
+    <div class="tb-brand">
+      <span class="tb-tana">tana</span>
+      <span class="tb-name">CommSkill Pro</span>
+    </div>
+    <div class="tb-prog" title="Session progress">
+      <div class="tb-pf" id="prog-fill" style="width: 0%"></div>
+    </div>
+    <div class="tb-r">
+      <span class="badge hi" id="hb-role"></span>
+      <span class="badge" id="hb-mode">—</span>
+      <span class="badge" id="hb-done">0/5</span>
+      <button
+        id="view-report-btn"
+        class="view-report-btn"
+        style="display: none"
+        onclick="document.getElementById('session-sum').scrollIntoView({ behavior: 'smooth', block: 'start' })"
+      >
+        View Report
+      </button>
+    </div>
+  </nav>
+
+  <div class="main">
+
+    <aside class="sidebar">
+      <div class="sbox">
+        <div class="sbox-hd">Channel</div>
+        <div class="sbox-bd" id="mode-nav">
+          <div class="mi slack a" data-mode="slack"><div class="md md-s"></div>Slack</div>
+          <div class="mi email"   data-mode="email"><div class="md md-e"></div>Email</div>
+          <div class="mi call"    data-mode="call" ><div class="md md-c"></div>Live Call</div>
+        </div>
+      </div>
+
+      <div class="sbox">
+        <div class="sbox-hd">Scenarios</div>
+        <div class="sbox-bd" id="sc-nav" style="padding: 0.32rem"></div>
+      </div>
+
+      <div class="sbox" id="hist-box" style="display: none">
+        <div class="sbox-hd">Scores</div>
+        <div class="sbox-bd" id="hist-body" style="padding: 0.42rem 0.32rem"></div>
+      </div>
+    </aside>
+
+    <main class="content" id="content"></main>
+
+  </div>
+</div>
+
+
+<button id="theme-toggle" class="theme-btn" title="Toggle dark mode">☀️</button>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
