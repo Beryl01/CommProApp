@@ -7,12 +7,15 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test": "npx playwright test",
+    "test:ui": "playwright test --ui",
+    "test:api": "newman run api-tests/CommSkillPro.postman_collection.json --reporters cli,htmlextra --reporter-htmlextra-export newman-report/report.html"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
     "@types/node": "^25.9.1",
+    "newman": "^6.2.2",
+    "newman-reporter-htmlextra": "^1.23.1",
     "typescript": "^5.4.5",
     "vite": "^5.3.1"
   }
