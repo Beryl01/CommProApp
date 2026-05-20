@@ -2,6 +2,16 @@ import type { Page, Route } from '@playwright/test';
 import { expect } from '@playwright/test';
 
 // ---------------------------------------------------------------------------
+// Timeout constants
+// Generous values — tests run against the live production API.
+// ---------------------------------------------------------------------------
+
+export const SCENARIO_LOAD_TIMEOUT = 300_000;   // 5 minutes — API scenario generation
+export const AI_RESPONSE_TIMEOUT   = 180_000;   // 3 minutes — AI opening or reply
+export const SCORE_PANEL_TIMEOUT   = 300_000;   // 5 minutes — full scoring round-trip
+export const UI_TIMEOUT            =  10_000;   // 10 seconds — local DOM transitions
+
+// ---------------------------------------------------------------------------
 // Mock data
 // ---------------------------------------------------------------------------
 
@@ -79,17 +89,14 @@ export const MOCK_SCORE = JSON.stringify({
   strongestMoment: 'You acknowledged the frustration immediately and took responsibility.',
   biggestGap:      'You did not propose a concrete timeline or follow-up action.',
   habitToBuild:    'Always close every difficult exchange with a specific action and timeframe.',
-  rewrite:         'I hear you, Sandra. I take full responsibility. I will have a status update for you within the hour.',
+  rewrite:         'I hear you, Sandra. I take full responsibility. I will have a status update within the hour.',
 });
 
 // ---------------------------------------------------------------------------
 // Route handler
+// Routes all API proxy calls to the correct mock response based on message content.
 // ---------------------------------------------------------------------------
 
-// Routes all API proxy calls to the correct mock response based on message content.
-// Scenario generation → MOCK_SCENARIOS JSON
-// Scoring            → MOCK_SCORE JSON
-// Everything else    → MOCK_AI_REPLY string (opening message or conversation reply)
 export async function mockProxy(route: Route): Promise<void> {
   const body         = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
   const firstContent = body?.messages?.[0]?.content ?? '';
@@ -125,51 +132,50 @@ export interface OnboardingOptions {
   goal?: string;
 }
 
-// Fills in the onboarding form with the provided options and clicks Start.
-// Registers mockProxy for all API calls and waits until the main app is visible.
+// Fills the onboarding form and clicks Start Training.
+// Registers mockProxy for all API calls.
 export async function completeOnboarding(page: Page, options: OnboardingOptions): Promise<void> {
   const { channel, role = 'Support Engineer', goal = 'handling escalations with empathy' } = options;
   await page.route('/.netlify/functions/proxy', mockProxy);
   await page.goto('/');
-  await page.fill('#ob-role', role);
-  await page.fill('#ob-learnt', goal);
+  await page.getByPlaceholder(/IT Support Specialist/).fill(role);
+  await page.getByPlaceholder(/active listening/).fill(goal);
   await page.locator(`[data-mode="${channel}"]`).click();
-  await page.locator('#ob-start').click();
-  await expect(page.locator('#app')).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('button', { name: 'Start Training →' }).click();
+  await expect(page.locator('#app')).toBeVisible({ timeout: UI_TIMEOUT });
 }
 
-// Waits until all three scenario cards have rendered in the content area.
+// Waits until all three scenario cards have rendered.
 export async function waitForScenarios(page: Page): Promise<void> {
-  await expect(page.locator('.sc')).toHaveCount(3, { timeout: 10_000 });
+  await expect(page.locator('.sc')).toHaveCount(3, { timeout: SCENARIO_LOAD_TIMEOUT });
 }
 
-// Opens the conversation for a scenario card.
-// If the card body is collapsed it opens it first, then clicks the gate button
-// and waits for the AI's opening message to appear.
+// Opens a scenario card's conversation.
+// If the card body is collapsed it expands it first.
 export async function startConversation(page: Page, idx: number): Promise<void> {
   const cardBody = page.locator(`#scb-${idx}`);
   if (!await cardBody.isVisible()) {
     await page.locator(`#sch-${idx}`).click();
-    await expect(cardBody).toBeVisible({ timeout: 5_000 });
+    await expect(cardBody).toBeVisible({ timeout: UI_TIMEOUT });
   }
   await page.locator(`#gatebn-${idx}`).click();
-  await expect(page.locator(`#msgs-${idx} .msg.ai`)).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator(`#msgs-${idx} .msg.ai`)).toBeVisible({ timeout: AI_RESPONSE_TIMEOUT });
 }
 
 // Clicks End & Score and waits for the feedback panel to fully render.
 export async function scoreScenario(page: Page, idx: number): Promise<void> {
   await page.locator(`#end-${idx}`).click();
-  await expect(page.locator(`#score-${idx} .sp`)).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator(`#score-${idx} .sp`)).toBeVisible({ timeout: SCORE_PANEL_TIMEOUT });
 }
 
-// Runs through all three scenario cards: opens conversation, ends early, waits for score.
+// Scores all three scenario cards in sequence.
 // Used by tests that need to trigger the full session report.
 export async function scoreAllScenarios(page: Page): Promise<void> {
   for (let i = 0; i < 3; i++) {
     await startConversation(page, i);
     await scoreScenario(page, i);
     if (i < 2) {
-      await expect(page.locator(`#scb-${i + 1}`)).toBeVisible({ timeout: 5_000 });
+      await expect(page.locator(`#scb-${i + 1}`)).toBeVisible({ timeout: UI_TIMEOUT });
     }
   }
 }
