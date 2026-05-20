@@ -4,4 +4,6 @@ dist/
 .env.local
 playwright-report/
 test-results/
+newman-report/
 SPEC.md
+.claude/
