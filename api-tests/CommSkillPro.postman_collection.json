@@ -2,13 +2,13 @@
   "info": {
     "name": "CommSkill Pro — API Tests",
     "_postman_id": "c5e7a3b1-2d4f-4e8a-9b6c-1a3d5f7e9b0c",
-    "description": "Functional API tests for CommSkill Pro Netlify serverless functions.\n\nBefore running:\n  • Set the baseUrl collection variable (default: https://commproapp.netlify.app)\n  • Positive proxy tests call the live Claude API and consume tokens — use max_tokens: 10 to keep costs minimal.",
+    "description": "Functional API tests for CommSkill Pro Netlify serverless functions.\n\nBefore running:\n  • Set the baseUrl collection variable (default: {{baseUrl}})\n  • Positive proxy tests call the live Claude API and consume tokens — use max_tokens: 10 to keep costs minimal.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://commproapp.netlify.app",
+      "value": "{{baseUrl}}",
       "type": "string",
       "description": "Base URL of the deployed app"
     }
