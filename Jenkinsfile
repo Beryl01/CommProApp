@@ -61,7 +61,7 @@ pipeline {
                     node api-tests/mock-server.cjs &
                     MOCK_PID=$!
                     sleep 2
-                    newman run api-tests/CommSkillPro.postman_collection.json \
+                    npx newman run api-tests/CommSkillPro.postman_collection.json \
                       --env-var baseUrl=http://localhost:3001 \
                       --reporters cli,htmlextra \
                       --reporter-htmlextra-export newman-report/report.html
