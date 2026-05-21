@@ -48,7 +48,8 @@ pipeline {
                         reportFiles: 'index.html',
                         reportName: 'Playwright Report',
                         allowMissing: true,
-                        keepAll: true
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true
                     ])
                 }
             }
@@ -65,7 +66,8 @@ pipeline {
                         reportFiles: 'report.html',
                         reportName: 'API Test Report',
                         allowMissing: true,
-                        keepAll: true
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true
                     ])
                 }
             }
