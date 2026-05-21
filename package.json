@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "npx playwright test",
     "test:ui": "playwright test --ui",
-    "test:api": "newman run api-tests/CommSkillPro.postman_collection.json --reporters cli,htmlextra --reporter-htmlextra-export newman-report/report.html"
+    "test:api": "node --dns-result-order=ipv4first ./node_modules/.bin/newman run api-tests/CommSkillPro.postman_collection.json --reporters cli,htmlextra --reporter-htmlextra-export newman-report/report.html"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",

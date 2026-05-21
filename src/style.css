@@ -79,6 +79,11 @@
 [data-theme="dark"] .view-report-btn { color: var(--green); }
 [data-theme="dark"] .conv-inp      { background: #0d1a28; border-color: #1e3244; color: var(--text-body); }
 [data-theme="dark"] .email-field-input { background: transparent; color: var(--text-body); }
+[data-theme="dark"] .dim-row       { color: #dde8f0; }
+[data-theme="dark"] .dim-green     { background: rgba(34,197,94,.22); }
+[data-theme="dark"] .dim-red       { background: rgba(239,68,68,.20); }
+[data-theme="dark"] .report-tag    { background: rgba(255,255,255,.07); }
+[data-theme="dark"] .sum-hd        { background: linear-gradient(135deg,rgba(14,154,192,.30),rgba(34,197,94,.24)) !important; }
 
 /* ── Theme Toggle ────────────────────────────────────────────── */
 .theme-btn {
