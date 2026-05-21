@@ -11,7 +11,7 @@
     "test:ui": "playwright test --ui",
     "mock:start": "node api-tests/mock-server.js &",
     "mock:stop": "pkill -f mock-server.js || true",
-    "test:api": "node api-tests/mock-server.cjs & sleep 2 && newman run api-tests/CommSkillPro.postman_collection.json --env-var baseUrl=http://localhost:3001 --reporters cli,htmlextra --reporter-htmlextra-export newman-report/report.html; pkill -f mock-server.cjs || true"
+    "test:api": "node api-tests/mock-server.cjs & sleep 2 && newman run api-tests/CommSkillPro.postman_collection.json --env-var baseUrl=http://localhost:3001 --reporters cli,htmlextra --reporter-htmlextra-export newman-report/report.html; RESULT=$?; pkill -f mock-server.cjs || true; exit $RESULT"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
