@@ -57,7 +57,18 @@ pipeline {
 
         stage('Run API Tests (Newman)') {
             steps {
-                sh 'npm run test:api'
+                sh '''
+                    node api-tests/mock-server.cjs &
+                    MOCK_PID=$!
+                    sleep 2
+                    newman run api-tests/CommSkillPro.postman_collection.json \
+                      --env-var baseUrl=http://localhost:3001 \
+                      --reporters cli,htmlextra \
+                      --reporter-htmlextra-export newman-report/report.html
+                    RESULT=$?
+                    kill $MOCK_PID 2>/dev/null || true
+                    exit $RESULT
+                '''
             }
             post {
                 always {
