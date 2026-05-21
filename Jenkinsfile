@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        npm_config_cache = '/tmp/npm-cache'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,8 +15,10 @@ pipeline {
         stage('Install Node.js') {
             steps {
                 sh '''
-                    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-                    sudo apt install -y nodejs
+                    if ! node --version 2>/dev/null | grep -q "v20"; then
+                        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+                        sudo apt install -y nodejs
+                    fi
                     node --version
                     npm --version
                 '''
@@ -21,7 +27,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                sh 'npm ci --prefer-offline --no-audit'
             }
         }
 
