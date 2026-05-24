@@ -15,7 +15,11 @@ exports.handler = async (event) => {
   try {
     payload = JSON.parse(event.body);
   } catch {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Invalid JSON body' }),
+    };
   }
 
   const response = await fetch(webhookUrl, {
@@ -25,8 +29,16 @@ exports.handler = async (event) => {
   });
 
   if (!response.ok) {
-    return { statusCode: response.status, body: JSON.stringify({ error: 'Slack API error' }) };
+    return {
+      statusCode: response.status,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Slack API error' }),
+    };
   }
 
-  return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+  return {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ok: true }),
+  };
 };

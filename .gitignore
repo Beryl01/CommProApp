@@ -7,3 +7,4 @@ test-results/
 newman-report/
 SPEC.md
 .claude/
+api-tests/target/
