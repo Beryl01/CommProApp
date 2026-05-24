@@ -31,6 +31,7 @@ package io.commskillpro.api;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -50,11 +51,19 @@ class CommSkillProApiTest {
     @BeforeAll
     static void configureRestAssured() {
         RestAssured.baseURI = BASE_URL;
+
         // The proxy function checks the Origin header against ALLOWED_ORIGIN.
         // Set it as a default so every request passes the origin guard.
         RestAssured.requestSpecification = new RequestSpecBuilder()
             .addHeader("Origin", BASE_URL)
             .build();
+
+        // The Netlify runtime can serve JSON-bodied responses with a
+        // "text/plain" Content-Type when the function omits the header.
+        // Register text/plain as a JSON parser so body assertions still work.
+        // The response_hasJsonContentType tests intentionally check the raw
+        // header value and will still fail until the function fix is deployed.
+        RestAssured.registerParser("text/plain", Parser.JSON);
     }
 
     // -------------------------------------------------------------------------
