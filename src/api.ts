@@ -18,10 +18,16 @@ export async function callClaude(
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ model, max_tokens: maxTokens, system, messages }),
   });
-  const data = await response.json() as { error?: { message: string }; content?: { text: string }[] };
+  // shape of what the Anthropic API returns - error on failure, content array on success
+  interface ClaudeResponse {
+    error?: { message: string };
+    content?: { text: string }[];
+  }
+  const data = await response.json() as ClaudeResponse;
   if (data.error) throw new Error(data.error.message);
-  // content[0].text is where Claude's response lives in the Messages API shape
-  return data.content?.[0]?.text ?? '';
+  // content is an array of blocks - the actual text is always in the first one
+  const firstBlock = data.content && data.content[0];
+  return firstBlock ? firstBlock.text : '';
 }
 
 // Posts a Slack message via the relay function. Accepts any valid Slack payload -

@@ -7,7 +7,8 @@ exports.handler = async (event) => {
   // Origin check keeps the proxy locked to requests from the app itself.
   // ALLOWED_ORIGIN is set in Netlify environment variables. If it's not set,
   // the check is skipped - useful for local development with netlify dev.
-  const origin  = event.headers['origin'] ?? event.headers['referer'] ?? '';
+  // browsers send 'origin' on cross-origin requests; older clients may send 'referer' instead
+  const origin = event.headers['origin'] || event.headers['referer'] || '';
   const allowed = process.env['ALLOWED_ORIGIN'];
   if (allowed && !origin.startsWith(allowed)) {
     return {
