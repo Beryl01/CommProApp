@@ -1,8 +1,12 @@
 import type { Message } from './types';
 
+// Model constants - Haiku is the default for most calls since it's fast and cheap.
+// Sonnet is available for anything that needs more reasoning (scoring, rewrites).
 export const SONNET = 'claude-sonnet-4-6';
 export const HAIKU  = 'claude-haiku-4-5-20251001';
 
+// All AI requests go through the Netlify proxy function, never directly to Anthropic.
+// This keeps the API key server-side and out of the browser bundle.
 export async function callClaude(
   messages: Message[],
   system: string,
@@ -16,9 +20,12 @@ export async function callClaude(
   });
   const data = await response.json() as { error?: { message: string }; content?: { text: string }[] };
   if (data.error) throw new Error(data.error.message);
+  // content[0].text is where Claude's response lives in the Messages API shape
   return data.content?.[0]?.text ?? '';
 }
 
+// Posts a Slack message via the relay function. Accepts any valid Slack payload -
+// plain text { text: "..." } or Block Kit blocks both work.
 export async function postToSlack(payload: Record<string, unknown>): Promise<void> {
   const response = await fetch('/.netlify/functions/slack', {
     method:  'POST',
