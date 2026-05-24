@@ -4,9 +4,8 @@ import {
   UI_TIMEOUT, AI_RESPONSE_TIMEOUT, SCORE_PANEL_TIMEOUT,
 } from './helpers';
 
-// ---------------------------------------------------------------------------
+
 // Starting a conversation
-// ---------------------------------------------------------------------------
 
 test.describe('Starting a conversation', () => {
   test.beforeEach(async ({ page }) => {
@@ -31,9 +30,8 @@ test.describe('Starting a conversation', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Sending messages
-// ---------------------------------------------------------------------------
 
 test.describe('Sending messages', () => {
   test.beforeEach(async ({ page }) => {
@@ -84,9 +82,8 @@ test.describe('Sending messages', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Auto-scoring after the final turn
-// ---------------------------------------------------------------------------
 
 test.describe('Auto-scoring after 2 turns', () => {
   test.beforeEach(async ({ page }) => {
@@ -116,9 +113,8 @@ test.describe('Auto-scoring after 2 turns', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // End & Score
-// ---------------------------------------------------------------------------
 
 test.describe('End & Score', () => {
   test.beforeEach(async ({ page }) => {
@@ -148,9 +144,8 @@ test.describe('End & Score', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Score panel contents
-// ---------------------------------------------------------------------------
 
 test.describe('Score panel contents', () => {
   test.beforeEach(async ({ page }) => {

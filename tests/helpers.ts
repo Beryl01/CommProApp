@@ -1,19 +1,16 @@
 import type { Page, Route } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-// ---------------------------------------------------------------------------
+
 // Timeout constants
-// Generous values — tests run against the live production API.
-// ---------------------------------------------------------------------------
 
 export const SCENARIO_LOAD_TIMEOUT = 300_000;   // 5 minutes — API scenario generation
 export const AI_RESPONSE_TIMEOUT   = 180_000;   // 3 minutes — AI opening or reply
 export const SCORE_PANEL_TIMEOUT   = 300_000;   // 5 minutes — full scoring round-trip
 export const UI_TIMEOUT            =  10_000;   // 10 seconds — local DOM transitions
 
-// ---------------------------------------------------------------------------
+
 // Mock data
-// ---------------------------------------------------------------------------
 
 export const MOCK_SCENARIOS = [
   {
@@ -92,10 +89,8 @@ export const MOCK_SCORE = JSON.stringify({
   rewrite:         'I hear you, Sandra. I take full responsibility. I will have a status update within the hour.',
 });
 
-// ---------------------------------------------------------------------------
+
 // Route handler
-// Routes all API proxy calls to the correct mock response based on message content.
-// ---------------------------------------------------------------------------
 
 export async function mockProxy(route: Route): Promise<void> {
   const body         = await route.request().postDataJSON() as { messages?: Array<{ role: string; content: string }> };
@@ -122,9 +117,8 @@ export async function mockProxy(route: Route): Promise<void> {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Page helpers
-// ---------------------------------------------------------------------------
 
 export interface OnboardingOptions {
   channel: string;

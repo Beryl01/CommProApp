@@ -6,9 +6,8 @@ import {
   UI_TIMEOUT, SCENARIO_LOAD_TIMEOUT, AI_RESPONSE_TIMEOUT, SCORE_PANEL_TIMEOUT,
 } from './helpers';
 
-// ---------------------------------------------------------------------------
+
 // Shared route helpers
-// ---------------------------------------------------------------------------
 
 async function serverError(route: Route): Promise<void> {
   await route.fulfill({
@@ -49,9 +48,8 @@ function callType(body: { messages?: Array<{ role: string; content: string }> })
   return 'conversation';
 }
 
-// ---------------------------------------------------------------------------
+
 // Scenario generation failures
-// ---------------------------------------------------------------------------
 
 test.describe('Scenario generation failure', () => {
   test('shows an error state in the content area when generation fails', async ({ page }) => {
@@ -70,9 +68,8 @@ test.describe('Scenario generation failure', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Conversation opening failures
-// ---------------------------------------------------------------------------
 
 test.describe('Conversation opening failure', () => {
   test('shows a connection error in the chat when the AI fails on the opening message', async ({ page }) => {
@@ -94,9 +91,8 @@ test.describe('Conversation opening failure', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // In-conversation reply failures
-// ---------------------------------------------------------------------------
 
 test.describe('Conversation reply failure', () => {
   test('shows an error in the chat when the AI fails to reply during a turn', async ({ page }) => {
@@ -148,9 +144,8 @@ test.describe('Conversation reply failure', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Scoring failures
-// ---------------------------------------------------------------------------
 
 test.describe('Scoring failure', () => {
   test('shows an error inside the score panel when scoring fails', async ({ page }) => {

@@ -1,9 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { mockProxy, completeOnboarding, waitForScenarios, UI_TIMEOUT, SCENARIO_LOAD_TIMEOUT } from './helpers';
 
-// ---------------------------------------------------------------------------
+
 // Sidebar channel navigation
-// ---------------------------------------------------------------------------
 
 test.describe('Channel sidebar', () => {
   test('only the selected channel appears in the sidebar navigation', async ({ page }) => {
@@ -51,9 +50,8 @@ test.describe('Channel sidebar', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Switching channels
-// ---------------------------------------------------------------------------
 
 test.describe('Switching channels', () => {
   test('clicking a different channel in the sidebar loads that channel\'s scenarios', async ({ page }) => {
@@ -90,9 +88,8 @@ test.describe('Switching channels', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Topbar channel indicator
-// ---------------------------------------------------------------------------
 
 test.describe('Topbar channel display', () => {
   test('the topbar shows the current channel name', async ({ page }) => {

@@ -4,9 +4,8 @@ import {
   UI_TIMEOUT, SCORE_PANEL_TIMEOUT,
 } from './helpers';
 
-// ---------------------------------------------------------------------------
+
 // Report visibility
-// ---------------------------------------------------------------------------
 
 test.describe('Report visibility', () => {
   test('the session report is hidden before any scenarios are completed', async ({ page }) => {
@@ -36,9 +35,8 @@ test.describe('Report visibility', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Report content
-// ---------------------------------------------------------------------------
 
 test.describe('Report content', () => {
   test.beforeEach(async ({ page }) => {
@@ -86,9 +84,8 @@ test.describe('Report content', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Report actions
-// ---------------------------------------------------------------------------
 
 test.describe('Report actions', () => {
   test.beforeEach(async ({ page }) => {
@@ -111,9 +108,8 @@ test.describe('Report actions', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // Progress tracking
-// ---------------------------------------------------------------------------
 
 test.describe('Progress bar and done counter', () => {
   test('the progress bar starts at 0% before any scenarios are scored', async ({ page }) => {

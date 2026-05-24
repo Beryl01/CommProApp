@@ -1,9 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { MOCK_SCENARIOS, mockProxy, completeOnboarding, waitForScenarios, startConversation, UI_TIMEOUT, SCENARIO_LOAD_TIMEOUT } from './helpers';
 
-// ---------------------------------------------------------------------------
+
 // Input sanitisation on the onboarding form
-// ---------------------------------------------------------------------------
 
 test.describe('Onboarding form sanitisation', () => {
   test('angle brackets in the role field are stripped before use', async ({ page }) => {
@@ -46,9 +45,8 @@ test.describe('Onboarding form sanitisation', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // HTML escaping in scenario card content
-// ---------------------------------------------------------------------------
 
 test.describe('HTML escaping in scenario cards', () => {
   test('a script tag in scenario title data is not executed', async ({ page }) => {
@@ -129,9 +127,8 @@ test.describe('HTML escaping in scenario cards', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
+
 // User message content in the conversation
-// ---------------------------------------------------------------------------
 
 test.describe('User message rendering in conversation', () => {
   test('HTML typed into the message input is rendered as plain text not as markup', async ({ page }) => {
