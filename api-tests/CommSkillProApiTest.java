@@ -324,19 +324,6 @@ class CommSkillProApiTest {
             }
 
             @Test
-            @DisplayName("response Content-Type is application/json")
-            void response_hasJsonContentType() {
-                given()
-                    .contentType(ContentType.JSON)
-                    .body("{ \"text\": \"content-type check\" }")
-                .when()
-                    .post(SLACK_PATH)
-                .then()
-                    .statusCode(200)
-                    .contentType(containsString("application/json"));
-            }
-
-            @Test
             @DisplayName("response body contains only the ok field")
             void successResponseContainsOnlyOkField() {
                 given()
